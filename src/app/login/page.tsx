@@ -9,7 +9,7 @@ const Googleloginbutton = () => {
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     console.log("Google ให้ Token มาแล้ว:", credentialResponse.credential);
     try {
-      const res = await fetch('http://localhost:8000/auth/google', {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + '/auth/google', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

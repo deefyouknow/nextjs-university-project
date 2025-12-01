@@ -60,7 +60,7 @@ const SignUpPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/info', { 
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/info`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
