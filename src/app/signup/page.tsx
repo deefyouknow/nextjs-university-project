@@ -47,7 +47,6 @@ const SignUpPage = () => {
     e.preventDefault();
     if (!isFormValid) return;
 
-    // ถ้า User กด Submit เลยโดยไม่คลิกช่องอื่น ให้ถือว่า touched ทุกช่องเพื่อโชว์ error (ถ้ามี)
     setTouched({
         f: true, e: true, p: true, pw: true, confirmPw: true
     });
@@ -68,7 +67,6 @@ const SignUpPage = () => {
 
       if (response.ok) {
         alert('สร้างบัญชีสำเร็จ!');
-        // Reset form หรือ Redirect
       } else {
         const errorData = await response.json();
         alert(`เกิดข้อผิดพลาด: ${JSON.stringify(errorData)}`);
@@ -78,8 +76,6 @@ const SignUpPage = () => {
     }
   };
 
-  // Helper สำหรับแสดง Error Message และเปลี่ยนสีขอบ
-  // รับค่า: valid (ผ่านไหม), touched (เคยคลิกไหม), message (ข้อความเตือน)
   const renderError = (isValid: boolean, isTouched: boolean, message: string) => {
     if (isTouched && !isValid) {
       return (
@@ -92,7 +88,6 @@ const SignUpPage = () => {
     return null;
   };
 
-  // Function คืนค่า Class ของ Input (เปลี่ยนสีขอบถ้าผิด)
   const getInputClass = (isValid: boolean, isTouched: boolean) => {
     const baseStyle = `w-full pl-10 pr-4 py-3 rounded-lg border focus:outline-none transition duration-200`;
     if (isTouched && !isValid) {
@@ -101,13 +96,16 @@ const SignUpPage = () => {
     return `${baseStyle} border-gray-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500`;
   };
 
-  const inputContainerStyle = `relative flex flex-col mt-3`; // เปลี่ยนเป็น flex-col เพื่อให้ error อยู่บรรทัดใหม่
-  const iconWrapperStyle = `relative w-full`; // Wrapper สำหรับ input และ icon
-  const iconStyle = `w-5 h-5 text-gray-400 absolute left-3 top-3.5`; // ปรับ top ให้ตรงกลาง
+  const inputContainerStyle = `relative flex flex-col mt-3`;
+  const iconWrapperStyle = `relative w-full`;
+  const iconStyle = `w-5 h-5 text-gray-400 absolute left-3 top-3.5`;
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 flex justify-center items-center p-4">
-      <div className="bg-white w-full max-w-4xl flex rounded-2xl shadow-2xl overflow-hidden min-h-[700px]">
+    // แก้ไข: ใช้ h-[100dvh] w-[100dvw] overflow-hidden เพื่อให้เต็มจอพอดีและไม่ scroll
+    <div className="h-[100dvh] w-[100dvw] bg-gray-100 flex justify-center items-center p-4 overflow-hidden">
+      
+      {/* ปรับ max-h ให้ไม่เกินหน้าจอ และใส่ overflow-y-auto ในการ์ดเผื่อเนื้อหายาวเกินจอเล็กจริงๆ */}
+      <div className="bg-white w-full max-w-4xl flex rounded-2xl shadow-2xl overflow-hidden h-auto max-h-[95dvh]">
 
         {/* Branding Section */}
         <div className="hidden md:flex w-1/2 bg-amber-500 flex-col justify-center items-center text-white p-8 relative">
@@ -124,8 +122,8 @@ const SignUpPage = () => {
           </ul>
         </div>
 
-        {/* Form Section */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center p-8 md:p-12">
+        {/* Form Section: เพิ่ม overflow-y-auto เพื่อให้ scroll ได้เฉพาะส่วนฟอร์มถ้าจอเล็กมาก */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center p-8 md:p-12 overflow-y-auto">
           <div className="mb-6 text-center md:text-left">
             <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
             <p className="text-gray-500 mt-2">Sign up for free to start.</p>
@@ -141,7 +139,7 @@ const SignUpPage = () => {
                   type="text" name="f"
                   value={formData.f}
                   onChange={handleChange}
-                  onBlur={handleBlur} // เพิ่ม onBlur
+                  onBlur={handleBlur}
                   placeholder="Full Name" 
                   className={getInputClass(isFullnameValid, touched.f)}
                 />
@@ -162,7 +160,7 @@ const SignUpPage = () => {
                   className={getInputClass(isEmailValid, touched.e)}
                 />
               </div>
-              {renderError(isEmailValid, touched.e, "รูปแบบอีเมลไม่ถูกต้อง (เช่น name@domain.com)")}
+              {renderError(isEmailValid, touched.e, "รูปแบบอีเมลไม่ถูกต้อง")}
             </div>
 
             {/* Phone */}
