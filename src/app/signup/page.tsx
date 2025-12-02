@@ -106,7 +106,7 @@ const SignUpPage = () => {
   const iconStyle = `w-5 h-5 text-gray-400 absolute left-3 top-3.5`; // ปรับ top ให้ตรงกลาง
 
   return (
-    <div className="min-h-[100dvh] w-full bg-gray-100 flex justify-center items-center p-4">
+    <div className="min-h-screen w-full bg-gray-100 flex justify-center items-center p-4">
       <div className="bg-white w-full max-w-4xl flex rounded-2xl shadow-2xl overflow-hidden min-h-[700px]">
 
         {/* Branding Section */}

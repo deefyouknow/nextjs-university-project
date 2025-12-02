@@ -84,7 +84,7 @@ const LoginPage = () => {
   };
 
   // สไตล์พื้นฐาน
-  const inputContainerStyle = `flex items-center mt-4`;
+  const inputContainerStyle = `relative flex items-center mt-4`;
   const inputStyle = `w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition duration-200`;
   const iconStyle = `w-5 h-5 text-gray-400 absolute left-3`;
 
