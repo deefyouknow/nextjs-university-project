@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   api:
-    image: ghcr.io/deefyouknow/react-project:latest     
+    image: ghcr.io/deefyouknow/nextjs-university-project:latest     
     container_name: reacty    
     env_file:
       - .env
