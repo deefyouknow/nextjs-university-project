@@ -16,7 +16,7 @@ services:
 
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: cloudflared-web
+    container_name: cloudflared-web-react
     command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN_KEY}
     networks:
       - tunnel-net
