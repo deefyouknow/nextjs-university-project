@@ -17,8 +17,8 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared-web
-    # command: tunnel --no-autoupdate run --url http://api:3000
-    command: tunnel --no-autoupdate run
+    command: tunnel --no-autoupdate run --url http://api:3000
+    # command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN_KEY}
     networks:
