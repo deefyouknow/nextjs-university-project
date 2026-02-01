@@ -43,9 +43,9 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{PORT_SERVER}}
+          port: ${{ secrets.PORT_SERVER }}
           source: "docker-compose.yml"
-          target: ${{PATH_SERVER}}
+          target: ${{ secrets.PATH_SERVER }}
 
       # 6. SSH เข้าไปสั่งรัน (Deploy)
       - name: Run Docker on Server
@@ -54,20 +54,14 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{PORT_SERVER}}
+          port: ${{ secrets.PORT_SERVER }}
           script: |
-            # เข้าไปที่โฟลเดอร์งาน
-            cd ${{PATH_SERVER}}
-            
-            # กำหนดชื่อ Image (ใช้ท่านี้เพื่อให้รองรับ Zsh/Bash ได้หมด)
+            cd ${{ secrets.PATH_SERVER }}
             export GITHUB_REPOSITORY="${{ github.repository }}"
             export REPO_LOWER=$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
             
-            # ดึง Image ล่าสุดมาเตรียมไว้
             docker compose pull
             
-            # รันใหม่ (ลบตัวเก่า -> สร้างตัวใหม่)
             docker compose up -d --force-recreate --remove-orphans
             
-            # ลบ Image ขยะทิ้ง
             docker image prune -f
