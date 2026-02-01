@@ -1,6 +1,6 @@
 const App = () => {
   return (
-    <div>
+    <div className="bg-red-300 h-screen w-screen">
       
     </div>
   )
