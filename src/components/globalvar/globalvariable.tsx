@@ -5,8 +5,6 @@ import { useEffect } from 'react';
 interface GlobalContextType {
   var1: boolean;
   setVar1: Dispatch<SetStateAction<boolean>>;
-  TokenKey: string;
-  setTokenKey: Dispatch<SetStateAction<string>>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined); // ไม่ต้องแก้ไข
