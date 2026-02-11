@@ -1,10 +1,12 @@
 'use client'
+// ส่วนของการ import
+import Link from "next/link"
 
 const Login = () => {
   
   return (
     <>
-      <div className="w-full h-full flex flex-col items-center justify-center overflow-auto">
+      <div className="bg-black w-full h-full flex flex-col items-center justify-center overflow-auto">
         <div className="bg-amber-200 w-[405px] text-center space-y-4 p-7 rounded">
           <h1 className="font-bold">Sign In To Web Application</h1>
           <div className="flex flex-col space-y-4">
@@ -13,7 +15,7 @@ const Login = () => {
             <input className="bg-white p-2 rounded"
               type="password" placeholder="Password" />              
           </div>
-          <div className="flex justify-around">
+          <div className="flex justify-between">
             <div>
               <input type="checkbox" className="mr-2" />
               <label>Remember me</label>
@@ -33,7 +35,8 @@ const Login = () => {
           </div>
           <div className="flex justify-around items-center">
             <h1 className="">don't have an account?</h1>
-            <button className="text-orange-400 hover:underline hover:text-black">REGISTER</button>
+            <a href="/register" className="text-orange-400 hover:underline hover:text-black">REGISTER</a>
+            <Link href="/a">dfsf</Link>
           </div>
         </div>
         <div className="h-40">

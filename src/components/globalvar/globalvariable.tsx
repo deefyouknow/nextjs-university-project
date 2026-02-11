@@ -5,15 +5,20 @@ import { useEffect } from 'react';
 interface GlobalContextType {
   var1: boolean;
   setVar1: Dispatch<SetStateAction<boolean>>;
+  TokenKey: string;
+  setTokenKey: Dispatch<SetStateAction<string>>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined); // ไม่ต้องแก้ไข
 
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [var1, setVar1] = useState(true);
+  
+  
   const contextValue = useMemo(() => ({ 
     var1,
-    setVar1
+    setVar1,
+    
   }), [var1]); // ใน [ ตรงนี้ใส่สิ่งที่ค่าไม่คงที่หรือเปลี่ยนแปลง ] 
   
   // ส่วนนี้ไม่ต้องแก้ไข
