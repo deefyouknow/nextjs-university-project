@@ -7,7 +7,7 @@ const Login = () => {
   return (
     <>
       <div className="bg-black w-full h-full flex flex-col items-center justify-center overflow-auto">
-        <div className="bg-amber-200 w-[405px] text-center space-y-4 p-7 rounded">
+        <div className="bg-amber-200 w-101.25 text-center space-y-4 p-7 rounded">
           <h1 className="font-bold">Sign In To Web Application</h1>
           <div className="flex flex-col space-y-4">
             <input className="bg-white p-2 rounded "
@@ -34,7 +34,7 @@ const Login = () => {
             <div className="bg-amber-500 h-7 rounded"></div>            
           </div>
           <div className="flex justify-around items-center">
-            <h1 className="">don't have an account?</h1>
+            <h1 className="">dont have an account?</h1>
             <a href="/register" className="text-orange-400 hover:underline hover:text-black">REGISTER</a>
             <Link href="/a">dfsf</Link>
           </div>

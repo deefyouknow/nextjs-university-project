@@ -4,6 +4,8 @@ import "./globals.css";
 import { GlobalProvider } from "@/components/globalvar/globalvariable";
 import { Sidebar } from "@/components/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Header } from "@/components/header";
+import { useGlobal } from "@/components/globalvar/globalvariable";
 
 const chakra = Chakra_Petch({
   subsets: ["latin", "thai"],
@@ -25,9 +27,14 @@ export default function RootLayout({
       <body className={`${chakra.className} antialiased`}>
         <GlobalProvider>
           <ThemeProvider>
-            <div className="h-dvh w-dvw flex ">
-              <Sidebar />
-              {children}
+            <div className="h-dvh w-dvw flex relative">
+              <div className={``}>
+                <Sidebar />
+              </div>
+              <div className="pl-10 flex flex-col h-full w-full overflow-y-scroll">
+                <Header />
+                {children}
+              </div>
             </div>
           </ThemeProvider>
         </GlobalProvider>
