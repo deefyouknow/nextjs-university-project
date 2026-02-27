@@ -31,9 +31,11 @@ export default function RootLayout({
                 <Sidebar />
                 <SidebarMobile />
               </div>
-              <div className="md:pl-10 flex flex-col h-full w-full overflow-y-scroll">
+              <div className="md:pl-10 flex flex-col h-full w-full overflow-y-scroll overscroll-none">
                 <Header />
-                {children}
+                <div className="px-4">                  
+                  {children}
+                </div>
               </div>
             </div>
           </ThemeProvider>
