@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { Chakra_Petch } from "next/font/google";
 import "./globals.css";
 import { GlobalProvider } from "@/components/globalvar/globalvariable";
-import { Sidebar } from "@/components/sidebar";
+import { Sidebar, SidebarMobile } from "@/components/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
-import { useGlobal } from "@/components/globalvar/globalvariable";
 
 const chakra = Chakra_Petch({
   subsets: ["latin", "thai"],
@@ -28,10 +27,11 @@ export default function RootLayout({
         <GlobalProvider>
           <ThemeProvider>
             <div className="h-dvh w-dvw flex relative">
-              <div className={``}>
+              <div>
                 <Sidebar />
+                <SidebarMobile />
               </div>
-              <div className="pl-10 flex flex-col h-full w-full overflow-y-scroll">
+              <div className="md:pl-10 flex flex-col h-full w-full overflow-y-scroll">
                 <Header />
                 {children}
               </div>

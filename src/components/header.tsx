@@ -12,8 +12,8 @@ export const Header = () => {
   const { setSidebarSwitch, sidebarSwitch } = useGlobal();
   return (
     <>
-      <div className='flex flex-row justify-between pl-5 pr-3 md:pr-20'>
-        <div className='h-[101px] w-full bg-bg flex flex-col justify-center'>
+      <div className='flex flex-row justify-between pl-5 pr-3 md:pr-10'>
+        <div className='h-25.25 w-full bg-bg flex flex-col justify-center'>
           <div className='flex flex-col text-[15px] font-bold'>
             <h1 className='text-muted hidden md:block'>
               path{" "}/
@@ -28,14 +28,15 @@ export const Header = () => {
         <div className='flex flex-row h-full w-full items-center justify-end space-x-2'>
           <CgProfile />
           <IoSettingsSharp />
-          {sidebarSwitch.toString()}
+          {/*{sidebarSwitch.toString()}*/}
           {/*Toggle Open Sidebar*/}
           <button onClick={() => setSidebarSwitch(!sidebarSwitch)}
-            className="bg-surface text-text font-bold w-10 h-10 flex items-center justify-center rounded-xl border-text/20 border-1">
+            className="bg-surface text-text font-bold  h-10 w-10 md:hidden flex items-center justify-center rounded-xl border-text/20 border-1">
             <AiOutlineAlignRight />
           </button>
-          <ThemeToggle />
-          
+          <div className='hidden md:block'>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </>
