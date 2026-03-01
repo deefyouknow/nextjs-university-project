@@ -1,9 +1,5 @@
-const AuthPage = () => {
-  return (
-    <div>
-      
-    </div>
-  );
-}
+import { redirect } from 'next/navigation';
 
-export default AuthPage;
+export default function RootPage() {  
+  redirect('/auth/login');   
+}

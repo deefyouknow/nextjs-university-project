@@ -19,7 +19,7 @@ const Profile = () => {
             และจัดการระบบ
           </p>
           {/*Link to Login*/}
-          <Link href="/login" className="font-bold duration-150 hover:bg-primary/80 active:bg-muted/10 bg-primary py-3 px-5 rounded-2xl w-full min-w-25 flex justify-center text-nowrap">
+          <Link href="/auth/login" className="font-bold duration-150 hover:bg-primary/80 active:bg-muted/10 bg-primary py-3 px-5 rounded-2xl w-full min-w-25 flex justify-center text-nowrap">
             Go to Login
           </Link>
           <Link href="/dashboard" className="text-muted pt-4 text-nowrap hover:text-text duration-150 active:text-muted/10">

@@ -5,7 +5,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (    
-      {children}    
+  return (
+    <div className="h-dvh w-dvh bg-bg">
+      {children}
+    </div>
   );
 }
