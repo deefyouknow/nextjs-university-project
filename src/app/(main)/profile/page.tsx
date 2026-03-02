@@ -7,7 +7,7 @@ const Profile = () => {
     <>
       <div className="h-full w-full flex items-start justify-center p-5">
         {/*zone page*/}
-        <div className="rounded-md border-muted/10 border-2 shadow-2xs bg-surface flex flex-col items-center p-10 max-w-md w-full min-w-60">
+        <div className="rounded-3xl border-muted/10 border-2 shadow-2xs bg-surface flex flex-col items-center p-10 max-w-sm w-full min-w-60">
           <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
             <FaLock className="text-primary text-2xl" />
           </div>

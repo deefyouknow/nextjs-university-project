@@ -3,8 +3,8 @@ import Link from "next/link";
 const LoginPage = () => {
   return (
     <>
-      <div className="flex min-h-dvh w-full items-center justify-center p-6 bg-bg">
-        <div className="w-full max-w-100 min-w-80 bg-surface p-8 rounded-3xl shadow-xl border border-muted/10">
+      <div className="flex min-h-dvh w-full items-center justify-center p-6 bg-surface sm:bg-bg">
+        <div className="w-full max-w-100 min-w-80 bg-surface p-8 rounded-3xl sm:shadow-xl sm:border border-muted/10">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-text mb-2">Welcome Back</h1>
             <p className="text-muted text-sm">กรุณาเข้าสู่ระบบ</p>
@@ -37,6 +37,9 @@ const LoginPage = () => {
           <p className="text-center mt-8 text-sm text-muted">
             ยังไม่มีบัญชีใช่ไหม? <Link href="/auth/register" className="text-primary font-bold hover:underline">สมัครสมาชิก</Link>
           </p>
+          <Link href="/" className="text-muted text-center w-full">
+            <p className="text-center pt-2">กลับไปหน้าหลัก</p>
+          </Link>
         </div>
       </div>
     </>
