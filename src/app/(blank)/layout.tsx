@@ -1,12 +1,6 @@
-import "@/app/globals.css";
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function BlankLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="h-dvh w-dvh bg-bg">
+    <div className="h-full w-full bg-bg relative overflow-auto">
       {children}
     </div>
   );

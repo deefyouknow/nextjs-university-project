@@ -1,30 +1,21 @@
-import "@/app/globals.css";
-import { GlobalProvider } from "@/components/globalvar/globalvariable";
 import { Sidebar, SidebarMobile } from "@/components/sidebar";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <GlobalProvider>
-      <ThemeProvider>
-        <div className="h-dvh w-dvw flex relative">
-          <div>
-            <Sidebar />
-            <SidebarMobile />
-          </div>
-          <div className="md:pl-10 flex flex-col h-full w-full overflow-y-scroll overscroll-none">
-            <Header />
-            <div className="px-4 h-full w-full">
-              {children}
-            </div>
-          </div>
-        </div>
-      </ThemeProvider>
-    </GlobalProvider>
+    <div className="h-full w-full flex relative">
+      {/*Sidbar Layout*/}
+      <div className="shrink-0">
+        <Sidebar />
+        <SidebarMobile />
+      </div>
+      {/*Box Content*/}
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-y-auto no-scrollbar px-4 pb-6">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }
