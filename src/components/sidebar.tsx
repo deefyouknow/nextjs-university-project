@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import Link from "next/link";
 import { useGlobal } from "@/components/globalvar/globalvariable";
 import { useEffect } from "react";
+import { LogoutButton } from "@/components/loginpage/signoutbt";
 
 export const Sidebar = () => {
   const pathname = usePathname();
@@ -123,8 +124,9 @@ export const SidebarMobile = () => {
                   </div>
                   <span className="text-[16px] font-bold pl-2">Profile</span>
                 </Link>
-                <div className="absolute bottom-0 pb-11 pl-4">
-                  <ThemeToggle />
+                <div className="absolute bottom-0 pb-11 pl-4 flex gap-2">
+                  <ThemeToggle /> 
+                  <div className="whitespace-nowrap"><LogoutButton /></div>
                 </div>
               </div>
             </div>

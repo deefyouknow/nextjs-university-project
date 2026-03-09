@@ -37,7 +37,9 @@ export const Header = () => {
             <AiOutlineAlignRight />
           </button>  
           {/*{isLoggedIn?<LogoutButton /> : <Link href="/login">x</Link>}       */}
-          <LogoutButton />
+          <div className='hidden md:block whitespace-nowrap'>            
+            <LogoutButton />
+          </div>
           <div className='hidden md:block'>
             <ThemeToggle />
           </div>
