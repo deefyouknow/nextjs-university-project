@@ -5,11 +5,13 @@ import { AiOutlineAlignRight } from "react-icons/ai";
 import { IoSettingsSharp } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { useGlobal } from "@/components/globalvar/globalvariable";
+import { LogoutButton } from "@/components/loginpage/signoutbt";
+import Link from 'next/link';
 
 export const Header = () => {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
-  const { setSidebarSwitch, sidebarSwitch } = useGlobal();
+  const { setSidebarSwitch, sidebarSwitch, isLoggedIn } = useGlobal();
   return (
     <>
       <div className='flex flex-row justify-between pl-5 pr-3 md:pr-10'>
@@ -25,15 +27,17 @@ export const Header = () => {
           </div>
         </div>
         {/*right 0*/}
-        <div className='flex flex-row h-full w-full items-center justify-end space-x-2'>
+        <div className='flex flex-row h-full w-full items-center justify-end space-x-2'> 
           <CgProfile />
           <IoSettingsSharp />
           {/*{sidebarSwitch.toString()}*/}
           {/*Toggle Open Sidebar*/}
           <button onClick={() => setSidebarSwitch(!sidebarSwitch)}
-            className="bg-surface text-text font-bold  h-10 w-10 md:hidden flex items-center justify-center rounded-xl border-text/20 border-1">
+            className="bg-surface text-text font-bold  h-10 w-10 md:hidden flex items-center justify-center rounded-xl border-text/20 border">
             <AiOutlineAlignRight />
-          </button>
+          </button>  
+          {/*{isLoggedIn?<LogoutButton /> : <Link href="/login">x</Link>}       */}
+          <LogoutButton />
           <div className='hidden md:block'>
             <ThemeToggle />
           </div>
