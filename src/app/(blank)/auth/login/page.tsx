@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { useState } from "react";
 import Cookies from "js-cookie"; // ติดตั้งด้วย: npm install js-cookie
@@ -35,10 +35,10 @@ const LoginPage = () => {
       });
 
       const data = await res.json();
-
+      // d
       if (res.ok) {
         // ✅ เก็บ Token ลงใน Cookie (อยู่ได้ 1 วัน หรือตามต้องการ)
-        Cookies.set("token", data.token, { expires: 1, path: '/' });
+        Cookies.set("token", data.token, { expires: 1, path: "/" });
         setIsLoggedIn(true);
 
         alert("เข้าสู่ระบบสำเร็จ!");
@@ -86,13 +86,23 @@ const LoginPage = () => {
               />
             </div>
 
-            <button type="submit" disabled={loading} className="w-full py-4 bg-primary text-bg font-bold rounded-2xl mt-4 hover:shadow-lg shadow-primary/20 transition-all active:scale-95">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-primary text-bg font-bold rounded-2xl mt-4 hover:shadow-lg shadow-primary/20 transition-all active:scale-95"
+            >
               {loading ? "กำลังตรวจสอบ..." : "SIGN IN"}
             </button>
           </form>
 
           <p className="text-center mt-8 text-sm text-muted">
-            ยังไม่มีบัญชีใช่ไหม? <Link href="/auth/register" className="text-primary font-bold hover:underline">สมัครสมาชิก</Link>
+            ยังไม่มีบัญชีใช่ไหม?{" "}
+            <Link
+              href="/auth/register"
+              className="text-primary font-bold hover:underline"
+            >
+              สมัครสมาชิก
+            </Link>
           </p>
           <Link href="/" className="text-muted text-center w-full">
             <p className="text-center pt-2">กลับไปหน้าหลัก</p>
@@ -101,6 +111,6 @@ const LoginPage = () => {
       </div>
     </>
   );
-}
+};
 
 export default LoginPage;
