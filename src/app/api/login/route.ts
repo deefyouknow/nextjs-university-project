@@ -1,11 +1,13 @@
-// app/api/login/route.js
+// app/api/login/route.ts
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    const response = await fetch('http://127.0.0.1:4000/add/auth/login', {
+    // ใช้ AXUM_API_URL จาก .env.local แทนการ hardcode — แก้ได้จุดเดียวไม่ต้องมาแก้ทุกไฟล์
+    const apiUrl = process.env.AXUM_API_URL ?? 'http://127.0.0.1:4000';
+    const response = await fetch(`${apiUrl}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -14,14 +16,18 @@ export async function POST(request: Request) {
       body: JSON.stringify(body),
     });
 
-    // เนื่องจาก Backend ส่งมาเป็น String (JWT) ตรงๆ ไม่ได้เป็น JSON
-    const token = await response.text(); 
+    // แก้ parsing: Axum ส่งกลับเป็น JSON { "token": "eyJ..." } ไม่ใช่ plain string
+    // จึง parse JSON แล้วดึง .token ออกมาแทนการใช้ .text() + .replace()
+    const data = await response.json();
 
-    if (response.status === 202 || response.ok) {
+    // แก้ condition: ใช้ response.ok อย่างเดียวพอ เพราะ Axum คืน 200 ปกติ ไม่ใช่ 202
+    if (response.ok) {
       // ส่ง Token กลับไปในรูปแบบที่เข้าถึงง่าย
-      return NextResponse.json({ token: token.replace(/"/g, '') }, { status: 200 });
+      return NextResponse.json({ token: data.token }, { status: 200 });
     } else {
-      return NextResponse.json({ message: "Login Failed" }, { status: response.status });
+      // แก้ error handling: พยายาม parse JSON error จาก Axum ({ "error": "..." }) ก่อน
+      // แล้ว fallback เป็น "Login Failed" ถ้าไม่มี
+      return NextResponse.json({ message: data.error ?? "Login Failed" }, { status: response.status });
     }
   } catch (error) {
     return NextResponse.json({ message: "Server Error" }, { status: 500 });

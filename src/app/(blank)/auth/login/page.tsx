@@ -1,32 +1,37 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import Cookies from "js-cookie"; // ติดตั้งด้วย: npm install js-cookie
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useGlobal } from "@/components/globalvar/globalvariable";
 
 const LoginPage = () => {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // สำหรับเก็บข้อความแจ้งเตือน
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { setIsLoggedIn } = useGlobal();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  // ตรวจสอบความครบถ้วนเบื้องต้นเพื่อให้ปุ่มกดได้
+  const isFormComplete = username && password;
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(""); // ล้าง error เก่าก่อนเริ่มตรวจสอบใหม่
+
+    // --- Validation Logic ---
     if (username.length < 4) {
-      alert("Username ต้องมีความยาวอย่างน้อย 4 ตัวอักษร");
-      setLoading(false);
+      setError("Username ต้องมีความยาวอย่างน้อย 4 ตัวอักษร");
       return;
     }
     if (password.length < 6) {
-      alert("Password ต้องมีความยาวอย่างน้อย 6 ตัวอักษร");
-      setLoading(false);
+      setError("Password ต้องมีความยาวอย่างน้อย 6 ตัวอักษร");
       return;
     }
+    // ------------------------
 
+    setLoading(true);
     try {
       const res = await fetch("/api/login", {
         method: "POST",
@@ -35,25 +40,25 @@ const LoginPage = () => {
       });
 
       const data = await res.json();
-      // d
       if (res.ok) {
         // ✅ เก็บ Token ลงใน Cookie (อยู่ได้ 1 วัน หรือตามต้องการ)
         Cookies.set("token", data.token, { expires: 1, path: "/" });
         setIsLoggedIn(true);
 
-        alert("เข้าสู่ระบบสำเร็จ!");
         // ไปหน้า Dashboard หรือหน้าหลัก
         router.push("/dashboard");
         router.refresh(); // เพื่อให้ Server Components รับรู้ถึง Cookie ใหม่
       } else {
-        alert("Username หรือ Password ไม่ถูกต้อง");
+        setError(data.message || "Username หรือ Password ไม่ถูกต้อง");
       }
-    } catch (err) {
-      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    } catch (_err) {
+      setError("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
+      console.log(_err);
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <>
       <div className="flex min-h-dvh w-full items-center justify-center p-6 bg-surface sm:bg-bg">
@@ -67,7 +72,7 @@ const LoginPage = () => {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-bold pl-1">Username</label>
               <input
-                type="username"
+                type="text"
                 placeholder="username"
                 className="w-full px-4 py-3 rounded-2xl bg-bg border border-muted/20 focus:border-primary outline-none transition-all"
                 value={username}
@@ -86,10 +91,22 @@ const LoginPage = () => {
               />
             </div>
 
+            {/* ส่วนแสดง Error Message (จะโชว์เมื่อมี error เท่านั้น) */}
+            {error && (
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs animate-in fade-in zoom-in duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              disabled={loading}
-              className="w-full py-4 bg-primary text-bg font-bold rounded-2xl mt-4 hover:shadow-lg shadow-primary/20 transition-all active:scale-95"
+              className={`w-full py-4 font-bold rounded-2xl mt-4 transition-all active:scale-95 ${
+                isFormComplete && !loading
+                  ? "bg-primary text-bg hover:shadow-lg shadow-primary/20"
+                  : "bg-gray-400 text-gray-700 cursor-not-allowed"
+              }`}
+              disabled={!isFormComplete || loading}
             >
               {loading ? "กำลังตรวจสอบ..." : "SIGN IN"}
             </button>

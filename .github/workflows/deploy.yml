@@ -2,7 +2,7 @@ name: CI/CD Build & Deploy
 
 on:
   push:
-    branches: [ "main" ] # ทำงานเมื่อ Push เข้า main
+    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -30,9 +30,9 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ env.REPO_LOWER }}:latest
-          no-cache: true 
+          no-cache: true
 
-      - name: Copy file to Server
+      - name: Copy docker-compose to Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -42,8 +42,7 @@ jobs:
           source: "docker-compose.yml"
           target: ${{ secrets.PATH_SERVER }}
 
-      # 6. SSH เข้าไปสั่งรัน (Deploy)
-      - name: Run Docker on Server
+      - name: Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -52,11 +51,15 @@ jobs:
           port: ${{ secrets.PORT_SERVER }}
           script: |
             cd ${{ secrets.PATH_SERVER }}
+
+            export APP_PORT="${{ secrets.APP_PORT }}"
+            export TUNNEL_TOKEN_KEY="${{ secrets.TUNNEL_TOKEN_KEY }}"
+            export AXUM_API_URL="${{ secrets.AXUM_API_URL }}"
             export GITHUB_REPOSITORY="${{ github.repository }}"
             export REPO_LOWER=$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
-            
+
             docker compose pull
-            
+
             docker compose up -d --force-recreate --remove-orphans
-            
+
             docker image prune -f

@@ -2,11 +2,10 @@ version: '3.8'
 
 services:
   api:
-    image: ghcr.io/deefyouknow/nextjs-university-project:latest     
-    container_name: reacty    
-    env_file:
-      - .env
-      
+    image: ghcr.io/deefyouknow/nextjs-university-project:latest
+    container_name: reacty
+    environment:
+      - AXUM_API_URL=${AXUM_API_URL}
     ports:
       - "${APP_PORT}:3000"
     command: npm run start
@@ -18,7 +17,6 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared-web
     command: tunnel --no-autoupdate run --url http://api:3000
-    # command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN_KEY}
     networks:

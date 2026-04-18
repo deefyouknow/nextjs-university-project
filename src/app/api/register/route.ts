@@ -1,4 +1,4 @@
-// app/api/route.ts
+// app/api/register/route.ts
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -6,7 +6,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { username, password } = body;
 
-    const rustResponse = await fetch('http://127.0.0.1:4000/add/auth/register', {
+    // ใช้ AXUM_API_URL จาก .env.local แทนการ hardcode — แก้ได้จุดเดียวไม่ต้องมาแก้ทุกไฟล์
+    const apiUrl = process.env.AXUM_API_URL ?? 'http://127.0.0.1:4000';
+    const rustResponse = await fetch(`${apiUrl}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -14,7 +16,9 @@ export async function POST(request: Request) {
       body: JSON.stringify({ username, password }),
     });
 
-    const data = await rustResponse.text();
+    // แก้ parsing: Axum ส่งกลับเป็น JSON { "token": "..." } ไม่ใช่ plain string
+    // จึง parse JSON แทนการใช้ .text()
+    const data = await rustResponse.json();
 
     if (!rustResponse.ok) {
       return NextResponse.json({ error: 'มีชื่อผู้ใช้ซ้ำ', details: data }, { status: rustResponse.status });
