@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const { username, password } = body;
 
     // ใช้ AXUM_API_URL จาก .env.local แทนการ hardcode — แก้ได้จุดเดียวไม่ต้องมาแก้ทุกไฟล์
-    const apiUrl = process.env.NEXT_PUBLIC_AXUM_API_URL ?? 'http://127.0.0.1:4000';
+    const apiUrl = process.env.AXUM_API_URL ?? 'http://127.0.0.1:4000';
     const rustResponse = await fetch(`${apiUrl}/auth/register`, {
       method: 'POST',
       headers: {

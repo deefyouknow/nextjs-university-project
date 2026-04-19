@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // ใช้ AXUM_API_URL จาก .env.local แทนการ hardcode — แก้ได้จุดเดียวไม่ต้องมาแก้ทุกไฟล์
-    const apiUrl = process.env.NEXT_PUBLIC_AXUM_API_URL ?? 'http://127.0.0.1:4000';
+    const apiUrl = process.env.AXUM_API_URL ?? 'http://127.0.0.1:4000';
     const response = await fetch(`${apiUrl}/auth/login`, {
       method: 'POST',
       headers: {
