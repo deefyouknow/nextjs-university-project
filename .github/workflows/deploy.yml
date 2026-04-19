@@ -52,11 +52,13 @@ jobs:
           script: |
             cd ${{ secrets.PATH_SERVER }}
 
+            # สร้างไฟล์ .env ใหม่ (อัปเดตแค่ค่า Link API และคงค่าอื่นๆ ไว้)
             cat > .env << ENVEOF
             REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
             APP_PORT=${{ secrets.APP_PORT }}
             TUNNEL_TOKEN_KEY=${{ secrets.TUNNEL_TOKEN_KEY }}
 
+            # 🟢 จุดที่เปลี่ยน: ดึงค่า API URL จาก GitHub Secret มาใส่ให้ TypeScript เห็นด้วย
             NEXT_PUBLIC_AXUM_API_URL=${{ secrets.AXUM_API_URL }}
             AXUM_API_URL=${{ secrets.AXUM_API_URL }}
 
@@ -65,6 +67,7 @@ jobs:
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             ENVEOF
 
+            # สั่ง Login และ Deploy ตามปกติ
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
             docker compose pull
