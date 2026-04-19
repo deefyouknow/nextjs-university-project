@@ -42,7 +42,7 @@ jobs:
           source: "docker-compose.yml"
           target: ${{ secrets.PATH_SERVER }}
 
-      - name: Deploy
+      - name: Deploy & Generate Env
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -52,14 +52,22 @@ jobs:
           script: |
             cd ${{ secrets.PATH_SERVER }}
 
-            export APP_PORT="${{ secrets.APP_PORT }}"
-            export TUNNEL_TOKEN_KEY="${{ secrets.TUNNEL_TOKEN_KEY }}"
-            export AXUM_API_URL="${{ secrets.AXUM_API_URL }}"
-            export GITHUB_REPOSITORY="${{ github.repository }}"
-            export REPO_LOWER=$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
+            cat > .env << ENVEOF
+            REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            APP_PORT=${{ secrets.APP_PORT }}
+            TUNNEL_TOKEN_KEY=${{ secrets.TUNNEL_TOKEN_KEY }}
+
+            NEXT_PUBLIC_AXUM_API_URL=${{ secrets.AXUM_API_URL }}
+            AXUM_API_URL=${{ secrets.AXUM_API_URL }}
+
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            ENVEOF
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
             docker compose pull
-
             docker compose up -d --force-recreate --remove-orphans
 
             docker image prune -f
