@@ -52,14 +52,19 @@ jobs:
           script: |
             cd ${{ secrets.PATH_SERVER }}
 
-            export APP_PORT="${{ secrets.APP_PORT }}"
-            export TUNNEL_TOKEN_KEY="${{ secrets.TUNNEL_TOKEN_KEY }}"
-            export AXUM_API_URL="${{ secrets.AXUM_API_URL }}"
-            export GITHUB_REPOSITORY="${{ github.repository }}"
-            export REPO_LOWER=$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
+            # 1. สร้างไฟล์ .env บน Server (เพื่อให้ Docker และ Next.js มองเห็นตัวแปร)
+            cat > .env << ENVEOF
+            APP_PORT=3000
+            TUNNEL_TOKEN_KEY=${{ secrets.TUNNEL_TOKEN_KEY }}
+            AXUM_API_URL=${{ secrets.AXUM_API_URL }}
+            NEXT_PUBLIC_AXUM_API_URL=${{ secrets.AXUM_API_URL }}
+            REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            ENVEOF
 
+            # 2. Login Docker บน Server ก่อนสั่ง Pull (แก้ปัญหา denied จากรอบที่แล้ว)
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # 3. รันระบบ
             docker compose pull
-
             docker compose up -d --force-recreate --remove-orphans
-
             docker image prune -f
