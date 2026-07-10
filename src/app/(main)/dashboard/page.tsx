@@ -8,10 +8,6 @@ const App = () => {
          lg:grid-cols-4 : จอคอม (4)
       */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-        
-        <div className="w-full h-[93.6px] bg-surface rounded-2xl shadow-xl">
-          {/* ใส่ของข้างในเองเลย */}
-        </div>
 
         <div className="w-full h-[93.6px] bg-surface rounded-2xl shadow-xl">
           {/* ใส่ของข้างในเองเลย */}
@@ -24,7 +20,11 @@ const App = () => {
         <div className="w-full h-[93.6px] bg-surface rounded-2xl shadow-xl">
           {/* ใส่ของข้างในเองเลย */}
         </div>
-        
+
+        <div className="w-full h-[93.6px] bg-surface rounded-2xl shadow-xl">
+          {/* ใส่ของข้างในเองเลย */}
+        </div>
+
       </div>
     </div>
   )
