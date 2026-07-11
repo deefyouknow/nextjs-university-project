@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(pnpm run *)",
+      "Bash(npm install *)",
+      "Bash(pnpm install *)",
+      "Bash(npx *)",
+      "Bash(npx next *)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(npx prettier *)",
+      "Bash(npx tailwindcss *)",
+      "Bash(git *)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Task(*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(docker *)",
+      "Bash(kubectl *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/deefyouknow/Documents/zed/final_project_2/apps/web && npx prettier --write \"${FILE_PATH}\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/deefyouknow/Documents/zed/final_project_2/apps/web && npx tsc --noEmit 2>&1 | head -20"
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "NEXT_PUBLIC_API_URL": "http://localhost:8080",
+    "NEXT_PUBLIC_WS_URL": "ws://localhost:8080"
+  }
+}
