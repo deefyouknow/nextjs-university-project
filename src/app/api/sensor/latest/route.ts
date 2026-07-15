@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const AXUM_API = process.env.AXUM_API_URL ?? 'http://localhost:4000';
+const AXUM_API = 'http://api.deefthanawat.online';
 
 export async function GET(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
