@@ -75,12 +75,12 @@ export default function TablePage() {
                 <tr key={row.id} className="hover:bg-muted/5 transition-colors">
                   <td className="px-4 py-3 font-mono text-xs">{new Date(row.time).toLocaleString('th-TH')}</td>
                   <td className="px-4 py-3">
-                    {row.lux_left ?? '-'} / {row.lux_right ?? '-'}
+                    {row.lux_left ?? 0} / {row.lux_right ?? 0}
                   </td>
                   <td className="px-4 py-3">
-                    {row.lux_l ?? '-'} / {row.lux_ml ?? '-'} / {row.lux_mr ?? '-'} / {row.lux_r ?? '-'}
+                    {row.lux_l ?? 0} / {row.lux_ml ?? 0} / {row.lux_mr ?? 0} / {row.lux_r ?? 0}
                   </td>
-                  <td className="px-4 py-3">{row.roter_angle ?? '-'}°</td>
+                  <td className="px-4 py-3">{row.roter_angle ?? 0}°</td>
                   <td className="px-4 py-3">
                     <span className={row.limit_sw_left ? 'text-red-400 font-medium' : 'text-green-400'}>
                       {row.limit_sw_left ? 'ON' : 'OFF'}

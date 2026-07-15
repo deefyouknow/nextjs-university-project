@@ -4,7 +4,7 @@
 import type { SensorReading } from '@/types/sensor';
 
 function fmt(v: number | null | undefined): string {
-  return v === null || v === undefined ? '—' : String(v);
+  return v === null || v === undefined ? '0' : String(v);
 }
 
 function fmtTime(iso: string): string {
@@ -94,7 +94,7 @@ export function SensorTable({ readings }: SensorTableProps) {
                   <td className="px-3 py-2.5 text-right text-text tabular-nums text-xs">
                     {r.roter_angle !== null && r.roter_angle !== undefined
                       ? `${r.roter_angle}°`
-                      : '—'}
+                      : '0°'}
                   </td>
                   {/* Limit sw */}
                   <td className="px-3 py-2.5 text-center">
@@ -115,7 +115,7 @@ export function SensorTable({ readings }: SensorTableProps) {
 
 function LimitBadge({ value }: { value: boolean | null | undefined }) {
   if (value === null || value === undefined) {
-    return <span className="text-muted text-xs">—</span>;
+    return <span className="text-muted text-xs">OFF</span>;
   }
   return (
     <span
