@@ -9,7 +9,7 @@ import { SensorTable } from '@/components/dashboard/sensor-table';
 import { CommandTable } from '@/components/dashboard/command-table';
 import { CreateCommandModal } from '@/components/dashboard/create-command-modal';
 import { LuxGauge, ArrayLuxBadge } from '@/components/dashboard/lux-gauge';
-import { AngleDisplay } from '@/components/dashboard/angle-display';
+import { PowerDisplay } from '@/components/dashboard/power-display';
 
 import type { SensorReading, SensorHistoryResponse } from '@/types/sensor';
 import type { Command, CommandListResponse } from '@/types/command';
@@ -36,17 +36,18 @@ export default function DashboardPage() {
 
   // ── Fetch helpers ──────────────────────────────────────────────────────────
   const fetchLatest = useCallback(async () => {
-    const res = await fetch('/api/sensor/latest', { cache: 'no-store' });
+    const res = await fetch('/api/sensors/latest', { cache: 'no-store' });
     if (res.status === 401) { router.push('/auth/login'); return; }
     if (!res.ok) throw new Error(`Sensor latest: ${res.status}`);
-    // route.ts now unwraps { reading } → returns SensorReading | null directly
-    const data: SensorReading | null = await res.json();
+    // Axum returns { reading: SensorReading | null } — unwrap here
+    const json = await res.json();
+    const data: SensorReading | null = json?.reading ?? null;
     setLatest(data);
     setLastUpdated(new Date());
   }, [router]);
 
   const fetchHistory = useCallback(async () => {
-    const res = await fetch('/api/sensor/history?limit=50', { cache: 'no-store' });
+    const res = await fetch('/api/sensors/history?limit=50', { cache: 'no-store' });
     if (res.status === 401) { router.push('/auth/login'); return; }
     if (!res.ok) throw new Error(`Sensor history: ${res.status}`);
     const data: SensorHistoryResponse = await res.json();
@@ -273,9 +274,11 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Roter Angle + Limit Switches */}
-          <AngleDisplay
-            angle={latest?.roter_angle}
+          {/* INA219 Power Monitor + Limit Switches */}
+          <PowerDisplay
+            voltage={latest?.ina_voltage}
+            current={latest?.ina_current}
+            power={latest?.ina_power}
             limitLeft={latest?.limit_sw_left}
             limitRight={latest?.limit_sw_right}
           />

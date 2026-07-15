@@ -45,8 +45,10 @@ export function SensorTable({ readings }: SensorTableProps) {
               <th className="px-3 py-3 text-right font-medium text-primary/80">A-ML</th>
               <th className="px-3 py-3 text-right font-medium text-primary/80">A-MR</th>
               <th className="px-3 py-3 text-right font-medium text-primary/80">A-R</th>
-              {/* Roter */}
-              <th className="px-3 py-3 text-right font-medium">Angle</th>
+              {/* INA219 Power */}
+              <th className="px-3 py-3 text-right font-medium text-green-400/80">V (mV)</th>
+              <th className="px-3 py-3 text-right font-medium text-green-400/80">I (mA)</th>
+              <th className="px-3 py-3 text-right font-medium text-green-400/80">P (mW)</th>
               {/* Limit sw */}
               <th className="px-3 py-3 text-center font-medium">SW·L</th>
               <th className="px-3 py-3 text-center font-medium">SW·R</th>
@@ -55,7 +57,7 @@ export function SensorTable({ readings }: SensorTableProps) {
           <tbody>
             {readings.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-4 py-8 text-center text-muted text-xs">
+                <td colSpan={12} className="px-4 py-8 text-center text-muted text-xs">
                   No data available — waiting for ESP32…
                 </td>
               </tr>
@@ -90,11 +92,15 @@ export function SensorTable({ readings }: SensorTableProps) {
                   <td className="px-3 py-2.5 text-right text-primary/90 tabular-nums text-xs">
                     {fmt(r.lux_r)}
                   </td>
-                  {/* Angle */}
-                  <td className="px-3 py-2.5 text-right text-text tabular-nums text-xs">
-                    {r.roter_angle !== null && r.roter_angle !== undefined
-                      ? `${r.roter_angle}°`
-                      : '0°'}
+                  {/* INA219 Power */}
+                  <td className="px-3 py-2.5 text-right text-green-300/90 tabular-nums text-xs">
+                    {fmt(r.ina_voltage)}
+                  </td>
+                  <td className="px-3 py-2.5 text-right text-green-300/90 tabular-nums text-xs">
+                    {fmt(r.ina_current)}
+                  </td>
+                  <td className="px-3 py-2.5 text-right text-green-300/90 tabular-nums text-xs">
+                    {fmt(r.ina_power)}
                   </td>
                   {/* Limit sw */}
                   <td className="px-3 py-2.5 text-center">

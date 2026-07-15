@@ -66,7 +66,9 @@ export default function TablePage() {
                 <th className="px-4 py-3 font-semibold text-muted">Time</th>
                 <th className="px-4 py-3 font-semibold text-muted">Lux (L/R)</th>
                 <th className="px-4 py-3 font-semibold text-muted">Array (L/ML/MR/R)</th>
-                <th className="px-4 py-3 font-semibold text-muted">Angle</th>
+                <th className="px-4 py-3 font-semibold text-muted">Voltage (mV)</th>
+                <th className="px-4 py-3 font-semibold text-muted">Current (mA)</th>
+                <th className="px-4 py-3 font-semibold text-muted">Power (mW)</th>
                 <th className="px-4 py-3 font-semibold text-muted">Limit (L/R)</th>
               </tr>
             </thead>
@@ -80,7 +82,9 @@ export default function TablePage() {
                   <td className="px-4 py-3">
                     {row.lux_l ?? 0} / {row.lux_ml ?? 0} / {row.lux_mr ?? 0} / {row.lux_r ?? 0}
                   </td>
-                  <td className="px-4 py-3">{row.roter_angle ?? 0}°</td>
+                  <td className="px-4 py-3">{row.ina_voltage ?? 0}</td>
+                  <td className="px-4 py-3">{row.ina_current ?? 0}</td>
+                  <td className="px-4 py-3">{row.ina_power ?? 0}</td>
                   <td className="px-4 py-3">
                     <span className={row.limit_sw_left ? 'text-red-400 font-medium' : 'text-green-400'}>
                       {row.limit_sw_left ? 'ON' : 'OFF'}
