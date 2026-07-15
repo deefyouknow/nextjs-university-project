@@ -2,7 +2,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const AXUM_API = process.env.AXUM_API_URL ?? 'http://api.deefthanawat.online';
+// ⚠️ Production: ต้อง set AXUM_API_URL เป็น HTTPS tunnel URL (ห้ามใช้ 127.0.0.1 ใน Docker)
+const AXUM_API = process.env.AXUM_API_URL ?? 'https://api.deefthanawat.online';
 
 // Paths ที่ต้อง proxy ไปยัง Axum โดยตรง
 const PROXY_PREFIXES = ['/api/sensors', '/api/commands'];
