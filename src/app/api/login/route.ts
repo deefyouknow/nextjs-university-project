@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // ใช้ AXUM_API_URL จาก .env.local แทนการ hardcode — แก้ได้จุดเดียวไม่ต้องมาแก้ทุกไฟล์
-    const apiUrl = 'http://api.deefthanawat.online';
+    const apiUrl = process.env.AXUM_API_URL || 'http://api.deefthanawat.online';
 
     // DEBUG: พิมพ์ค่า apiUrl เพื่อเช็คว่าดึงจาก Secret ได้อะไรบ้าง (ดูได้ใน docker logs)
     console.log("[DEBUG API/LOGIN] Current AXUM_API_URL is:", process.env.AXUM_API_URL, "-> Using:", apiUrl);
