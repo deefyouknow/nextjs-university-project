@@ -18,11 +18,20 @@ export async function GET(request: NextRequest) {
   if (date) params.set('date', date);
   params.set('limit', limit);
 
-  const res = await fetch(`${AXUM_API}/sensors/history?${params.toString()}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: 'no-store',
-  });
+  try {
+    const res = await fetch(`${AXUM_API}/sensors/history?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
 
-  const data = await res.json();
-  return NextResponse.json(data, { status: res.status });
+    if (!res.ok) {
+      return NextResponse.json({ error: 'Upstream error', status: res.status }, { status: res.status });
+    }
+
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
+  } catch (err) {
+    console.error('Fetch history error:', err);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }
