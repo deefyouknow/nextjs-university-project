@@ -12,7 +12,7 @@ export default function TablePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch('/api/sensor/history?limit=100', { cache: 'no-store' });
+        const res = await fetch('/api/sensors/history?limit=100', { cache: 'no-store' });
         if (!res.ok) throw new Error(`API returned ${res.status}`);
         const data: SensorHistoryResponse = await res.json();
         setReadings(data.readings ?? []);
