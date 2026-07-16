@@ -1,4 +1,3 @@
-// src/components/dashboard/create-command-modal.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -11,21 +10,22 @@ interface CreateCommandModalProps {
 }
 
 export function CreateCommandModal({ open, onClose, onSuccess }: CreateCommandModalProps) {
-  const [targetLuxL, setTargetLuxL] = useState<string>('');
-  const [targetLuxR, setTargetLuxR] = useState<string>('');
+  const [mode, setMode] = useState<'error' | 'light_bias'>('error');
+  const [targetValue, setTargetValue] = useState<string>('50');
+  const [targetLeftRatio, setTargetLeftRatio] = useState<string>('0.50');
+  const [targetRightRatio, setTargetRightRatio] = useState<string>('0.50');
+  const [tolerance, setTolerance] = useState<string>('10');
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // focus first input when modal opens
   useEffect(() => {
     if (open) {
-      setTargetLuxL('');
-      setTargetLuxR('');
       setError(null);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
-  }, [open]);
+  }, [open, mode]);
 
   if (!open) return null;
 
@@ -35,9 +35,12 @@ export function CreateCommandModal({ open, onClose, onSuccess }: CreateCommandMo
     setError(null);
 
     const body: CreateCommandRequest = {
-      source: 'manual',
-      target_lux_l: targetLuxL ? parseInt(targetLuxL) : undefined,
-      target_lux_r: targetLuxR ? parseInt(targetLuxR) : undefined,
+      from_user: 'dashboard',
+      target_type: mode,
+      target_value: mode === 'error' ? parseFloat(targetValue) : undefined,
+      target_left_ratio: mode === 'light_bias' ? parseFloat(targetLeftRatio) : undefined,
+      target_right_ratio: mode === 'light_bias' ? parseFloat(targetRightRatio) : undefined,
+      tolerance: parseFloat(tolerance),
     };
 
     try {
@@ -67,60 +70,105 @@ export function CreateCommandModal({ open, onClose, onSuccess }: CreateCommandMo
   }
 
   return (
-    /* backdrop */
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="w-full max-w-sm mx-4 bg-surface rounded-2xl shadow-2xl p-6 flex flex-col gap-5">
-        {/* title */}
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-text">⚙️ New Command</h2>
           <button
             onClick={onClose}
             className="text-muted hover:text-text transition-colors text-lg leading-none"
-            aria-label="Close"
           >
             ✕
           </button>
         </div>
 
-        {/* form */}
+        <div className="flex gap-2 p-1 bg-bg rounded-lg border border-muted/10">
+          <button
+            type="button"
+            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'error' ? 'bg-primary text-white shadow' : 'text-muted hover:text-text'}`}
+            onClick={() => {
+              setMode('error');
+              setTolerance('10');
+            }}
+          >
+            User Mode
+          </button>
+          <button
+            type="button"
+            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'light_bias' ? 'bg-primary text-white shadow' : 'text-muted hover:text-text'}`}
+            onClick={() => {
+              setMode('light_bias');
+              setTolerance('0.02');
+            }}
+          >
+            AI Mode
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-muted uppercase tracking-wider font-medium">
-              Target Lux Left
-            </label>
-            <input
-              ref={inputRef}
-              id="target_lux_l"
-              type="number"
-              min={0}
-              placeholder="e.g. 1000"
-              value={targetLuxL}
-              onChange={(e) => setTargetLuxL(e.target.value)}
-              className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:outline-none focus:border-primary transition-colors"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-muted uppercase tracking-wider font-medium">
-              Target Lux Right
-            </label>
-            <input
-              id="target_lux_r"
-              type="number"
-              min={0}
-              placeholder="e.g. 1200"
-              value={targetLuxR}
-              onChange={(e) => setTargetLuxR(e.target.value)}
-              className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:outline-none focus:border-primary transition-colors"
-            />
-          </div>
-
-          {error && (
-            <p className="text-xs text-red-400 bg-red-500/10 rounded-lg px-3 py-2">{error}</p>
+          {mode === 'error' ? (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-muted uppercase tracking-wider font-medium">Target Error</label>
+              <input
+                ref={inputRef}
+                type="number"
+                step="0.1"
+                min={0}
+                value={targetValue}
+                onChange={(e) => setTargetValue(e.target.value)}
+                className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:border-primary focus:outline-none transition-colors"
+                required
+              />
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <div className="flex flex-col gap-1.5 flex-1">
+                <label className="text-xs text-muted uppercase tracking-wider font-medium">Left Ratio</label>
+                <input
+                  ref={inputRef}
+                  type="number"
+                  step="0.01"
+                  min={0}
+                  max={1}
+                  value={targetLeftRatio}
+                  onChange={(e) => setTargetLeftRatio(e.target.value)}
+                  className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:border-primary focus:outline-none transition-colors"
+                  required
+                />
+              </div>
+              <div className="flex flex-col gap-1.5 flex-1">
+                <label className="text-xs text-muted uppercase tracking-wider font-medium">Right Ratio</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min={0}
+                  max={1}
+                  value={targetRightRatio}
+                  onChange={(e) => setTargetRightRatio(e.target.value)}
+                  className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:border-primary focus:outline-none transition-colors"
+                  required
+                />
+              </div>
+            </div>
           )}
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-muted uppercase tracking-wider font-medium">Tolerance</label>
+            <input
+              type="number"
+              step="0.01"
+              min={0}
+              value={tolerance}
+              onChange={(e) => setTolerance(e.target.value)}
+              className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:border-primary focus:outline-none transition-colors"
+              required
+            />
+          </div>
+
+          {error && <p className="text-xs text-red-400 bg-red-500/10 rounded-lg px-3 py-2">{error}</p>}
 
           <div className="flex gap-3 pt-1">
             <button
@@ -133,9 +181,9 @@ export function CreateCommandModal({ open, onClose, onSuccess }: CreateCommandMo
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:brightness-110 transition-all disabled:opacity-50"
             >
-              {loading ? 'Sending…' : 'Send Command'}
+              {loading ? 'Sending…' : 'Send'}
             </button>
           </div>
         </form>

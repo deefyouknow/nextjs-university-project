@@ -1,19 +1,19 @@
-// Types matching Axum API: POST /commands, GET /commands/pending, GET /commands/history
-
-export type CommandStatus = 'pending' | 'executing' | 'success' | 'failed';
+export type CommandStatus = 0 | 1 | 2; // 0=Waiting, 1=Success, 2=Failed/Interrupt
 
 export interface Command {
   id: number;
-  created_at: string; // ISO 8601 timestamp
-  source: string;     // 'manual' | 'algorithm'
-  target_lux_l: number | null;
-  target_lux_r: number | null;
-  status: CommandStatus;
-  executed_at: string | null;
+  created_at: string;
   completed_at: string | null;
+  function_name: string;
+  from_user: string;
+  target_type: string;
+  target_value: number | null;
+  target_left_ratio: number | null;
+  target_right_ratio: number | null;
+  tolerance: number;
   lux_left: number | null;
   lux_right: number | null;
-  response_note: string | null;
+  status: CommandStatus;
 }
 
 export interface CommandListResponse {
@@ -24,14 +24,14 @@ export interface CommandListResponse {
 export interface CommandResponse {
   id: number;
   created_at: string;
-  source: string;
-  target_lux_l: number | null;
-  target_lux_r: number | null;
   status: CommandStatus;
 }
 
 export interface CreateCommandRequest {
-  source?: string;
-  target_lux_l?: number;
-  target_lux_r?: number;
+  from_user: string;
+  target_type: string;
+  target_value?: number;
+  target_left_ratio?: number;
+  target_right_ratio?: number;
+  tolerance: number;
 }

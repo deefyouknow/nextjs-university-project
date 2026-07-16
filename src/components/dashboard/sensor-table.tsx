@@ -1,7 +1,6 @@
-// src/components/dashboard/sensor-table.tsx
 'use client';
 
-import type { SensorReading } from '@/types/sensor';
+import type { SensorLog } from '@/types/sensor';
 
 function fmt(v: number | null | undefined): string {
   return v === null || v === undefined ? '0' : String(v);
@@ -19,45 +18,38 @@ function fmtTime(iso: string): string {
 }
 
 interface SensorTableProps {
-  readings: SensorReading[];
+  readings: SensorLog[];
 }
 
 export function SensorTable({ readings }: SensorTableProps) {
   return (
     <div className="w-full bg-surface rounded-2xl shadow-xl overflow-hidden">
-      {/* header */}
       <div className="px-5 py-4 border-b border-muted/20 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-text">📡 Sensor History</h2>
         <span className="text-xs text-muted">{readings.length} records</span>
       </div>
 
-      {/* table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-muted text-xs uppercase tracking-wider border-b border-muted/10">
               <th className="px-4 py-3 text-left font-medium">Time</th>
-              {/* Solar sensors */}
               <th className="px-3 py-3 text-right font-medium text-yellow-400/80">☀ L</th>
               <th className="px-3 py-3 text-right font-medium text-yellow-400/80">☀ R</th>
-              {/* Array sensors */}
               <th className="px-3 py-3 text-right font-medium text-primary/80">A-L</th>
               <th className="px-3 py-3 text-right font-medium text-primary/80">A-ML</th>
               <th className="px-3 py-3 text-right font-medium text-primary/80">A-MR</th>
               <th className="px-3 py-3 text-right font-medium text-primary/80">A-R</th>
-              {/* INA219 Power */}
               <th className="px-3 py-3 text-right font-medium text-green-400/80">V (mV)</th>
               <th className="px-3 py-3 text-right font-medium text-green-400/80">I (mA)</th>
               <th className="px-3 py-3 text-right font-medium text-green-400/80">P (mW)</th>
-              {/* Limit sw */}
-              <th className="px-3 py-3 text-center font-medium">SW·L</th>
-              <th className="px-3 py-3 text-center font-medium">SW·R</th>
+              <th className="px-3 py-3 text-center font-medium">Status</th>
             </tr>
           </thead>
           <tbody>
             {readings.length === 0 ? (
               <tr>
-                <td colSpan={12} className="px-4 py-8 text-center text-muted text-xs">
+                <td colSpan={11} className="px-4 py-8 text-center text-muted text-xs">
                   No data available — waiting for ESP32…
                 </td>
               </tr>
@@ -70,16 +62,14 @@ export function SensorTable({ readings }: SensorTableProps) {
                   }`}
                 >
                   <td className="px-4 py-2.5 text-text text-xs font-mono whitespace-nowrap">
-                    {fmtTime(r.time)}
-                  </td>
-                  {/* Solar lux */}
-                  <td className="px-3 py-2.5 text-right text-yellow-300/90 tabular-nums text-xs font-semibold">
-                    {fmt(r.lux_left)}
+                    {fmtTime(r.timestamp_slot)}
                   </td>
                   <td className="px-3 py-2.5 text-right text-yellow-300/90 tabular-nums text-xs font-semibold">
-                    {fmt(r.lux_right)}
+                    {fmt(r.lux_panel_left)}
                   </td>
-                  {/* Array lux */}
+                  <td className="px-3 py-2.5 text-right text-yellow-300/90 tabular-nums text-xs font-semibold">
+                    {fmt(r.lux_panel_right)}
+                  </td>
                   <td className="px-3 py-2.5 text-right text-primary/90 tabular-nums text-xs">
                     {fmt(r.lux_l)}
                   </td>
@@ -92,22 +82,19 @@ export function SensorTable({ readings }: SensorTableProps) {
                   <td className="px-3 py-2.5 text-right text-primary/90 tabular-nums text-xs">
                     {fmt(r.lux_r)}
                   </td>
-                  {/* INA219 Power */}
                   <td className="px-3 py-2.5 text-right text-green-300/90 tabular-nums text-xs">
-                    {fmt(r.ina_voltage)}
+                    {fmt(r.voltage)}
                   </td>
                   <td className="px-3 py-2.5 text-right text-green-300/90 tabular-nums text-xs">
-                    {fmt(r.ina_current)}
+                    {fmt(r.current)}
                   </td>
                   <td className="px-3 py-2.5 text-right text-green-300/90 tabular-nums text-xs">
-                    {fmt(r.ina_power)}
-                  </td>
-                  {/* Limit sw */}
-                  <td className="px-3 py-2.5 text-center">
-                    <LimitBadge value={r.limit_sw_left} />
+                    {fmt(r.power)}
                   </td>
                   <td className="px-3 py-2.5 text-center">
-                    <LimitBadge value={r.limit_sw_right} />
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${r.is_online ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                      {r.is_online ? 'ONLINE' : 'OFFLINE'}
+                    </span>
                   </td>
                 </tr>
               ))
@@ -116,20 +103,5 @@ export function SensorTable({ readings }: SensorTableProps) {
         </table>
       </div>
     </div>
-  );
-}
-
-function LimitBadge({ value }: { value: boolean | null | undefined }) {
-  if (value === null || value === undefined) {
-    return <span className="text-muted text-xs">OFF</span>;
-  }
-  return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-        value ? 'bg-red-500/15 text-red-400' : 'bg-green-500/15 text-green-400'
-      }`}
-    >
-      {value ? 'ON' : 'OFF'}
-    </span>
   );
 }

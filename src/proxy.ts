@@ -18,12 +18,15 @@ export async function proxy(request: NextRequest) {
     const token = request.cookies.get('token')?.value;
 
     if (!token) {
+      console.log(`[Proxy] ❌ No token cookie — ${pathname} → 401`);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // ตัด /api ออกแล้ว forward ไป Axum (เช่น /api/sensors/latest → /sensors/latest)
     const upstreamPath = pathname.replace(/^\/api/, '');
     const upstreamUrl = `${AXUM_API}${upstreamPath}${request.nextUrl.search}`;
+
+    console.log(`[Proxy] → ${request.method} ${upstreamUrl}`);
 
     try {
       const upstreamRes = await fetch(upstreamUrl, {
@@ -40,6 +43,8 @@ export async function proxy(request: NextRequest) {
 
       const data = await upstreamRes.text();
 
+      console.log(`[Proxy] ← ${upstreamRes.status} ${upstreamUrl} (${data.length} bytes)`);
+
       return new NextResponse(data, {
         status: upstreamRes.status,
         headers: {
@@ -47,7 +52,7 @@ export async function proxy(request: NextRequest) {
         },
       });
     } catch (err) {
-      console.error(`[Proxy] Error forwarding ${upstreamUrl}:`, err);
+      console.error(`[Proxy] ❌ Error forwarding ${upstreamUrl}:`, err);
       return NextResponse.json({ error: 'Upstream unreachable' }, { status: 502 });
     }
   }

@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { SensorReading, SensorHistoryResponse } from '@/types/sensor';
+import type { SensorLog, SensorHistoryResponse } from '@/types/sensor';
 
 export default function TablePage() {
-  const [readings, setReadings] = useState<SensorReading[]>([]);
+  const [readings, setReadings] = useState<SensorLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetchTime, setLastFetchTime] = useState<Date | null>(null);
@@ -69,29 +69,25 @@ export default function TablePage() {
                 <th className="px-4 py-3 font-semibold text-muted">Voltage (mV)</th>
                 <th className="px-4 py-3 font-semibold text-muted">Current (mA)</th>
                 <th className="px-4 py-3 font-semibold text-muted">Power (mW)</th>
-                <th className="px-4 py-3 font-semibold text-muted">Limit (L/R)</th>
+                <th className="px-4 py-3 font-semibold text-muted">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/20">
               {readings.map((row) => (
                 <tr key={row.id} className="hover:bg-muted/5 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs">{new Date(row.time).toLocaleString('th-TH')}</td>
+                  <td className="px-4 py-3 font-mono text-xs">{new Date(row.timestamp_slot).toLocaleString('th-TH')}</td>
                   <td className="px-4 py-3">
-                    {row.lux_left ?? 0} / {row.lux_right ?? 0}
+                    {row.lux_panel_left ?? 0} / {row.lux_panel_right ?? 0}
                   </td>
                   <td className="px-4 py-3">
                     {row.lux_l ?? 0} / {row.lux_ml ?? 0} / {row.lux_mr ?? 0} / {row.lux_r ?? 0}
                   </td>
-                  <td className="px-4 py-3">{row.ina_voltage ?? 0}</td>
-                  <td className="px-4 py-3">{row.ina_current ?? 0}</td>
-                  <td className="px-4 py-3">{row.ina_power ?? 0}</td>
+                  <td className="px-4 py-3">{row.voltage ?? 0}</td>
+                  <td className="px-4 py-3">{row.current ?? 0}</td>
+                  <td className="px-4 py-3">{row.power ?? 0}</td>
                   <td className="px-4 py-3">
-                    <span className={row.limit_sw_left ? 'text-red-400 font-medium' : 'text-green-400'}>
-                      {row.limit_sw_left ? 'ON' : 'OFF'}
-                    </span>
-                    <span className="text-muted px-1">/</span>
-                    <span className={row.limit_sw_right ? 'text-red-400 font-medium' : 'text-green-400'}>
-                      {row.limit_sw_right ? 'ON' : 'OFF'}
+                    <span className={row.is_online ? 'text-green-400 font-medium' : 'text-red-400 font-medium'}>
+                      {row.is_online ? 'ONLINE' : 'OFFLINE'}
                     </span>
                   </td>
                 </tr>

@@ -1,22 +1,19 @@
-// Types matching Axum API: GET /sensors/latest and GET /sensors/history
-
-export interface SensorReading {
+export interface SensorLog {
   id: number;
-  time: string; // ISO 8601 timestamp
-  lux_left: number | null;
-  lux_right: number | null;
+  timestamp_slot: string; // ISO 8601 timestamp
   lux_l: number | null;
   lux_ml: number | null;
   lux_mr: number | null;
   lux_r: number | null;
-  ina_voltage: number | null;   // millivolts
-  ina_current: number | null;   // milliamps
-  ina_power: number | null;     // milliwatts
-  limit_sw_left: boolean | null;
-  limit_sw_right: boolean | null;
+  lux_panel_left: number | null;
+  lux_panel_right: number | null;
+  voltage: number | null;
+  current: number | null;
+  power: number | null;
+  is_online: boolean;
 }
 
 export interface SensorHistoryResponse {
-  readings: SensorReading[];
+  readings: SensorLog[];
   count: number;
 }
