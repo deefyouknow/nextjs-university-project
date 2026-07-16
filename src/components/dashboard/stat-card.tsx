@@ -12,10 +12,11 @@ interface StatCardProps {
   accent?: string;
   /** sub-description shown below value */
   sub?: string;
+  isOffline?: boolean;
 }
 
-export function StatCard({ label, value, unit, icon, accent = 'text-primary', sub }: StatCardProps) {
-  const displayValue = value === null || value === undefined ? '—' : String(value);
+export function StatCard({ label, value, unit, icon, accent = 'text-primary', sub, isOffline }: StatCardProps) {
+  const displayValue = isOffline ? 'No signal' : (value === null || value === undefined ? '—' : String(value));
 
   return (
     <div className="w-full bg-surface rounded-2xl shadow-xl p-5 flex flex-col gap-3 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-2xl">

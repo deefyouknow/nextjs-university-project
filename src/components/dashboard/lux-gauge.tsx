@@ -7,6 +7,7 @@ interface LuxGaugeProps {
   label: string;
   color?: string;
   size?: number;
+  isOffline?: boolean;
 }
 
 export function LuxGauge({
@@ -15,6 +16,7 @@ export function LuxGauge({
   label,
   color = '#4FD1C5',
   size = 120,
+  isOffline,
 }: LuxGaugeProps) {
   const radius = 48;
   const cx = 60;
@@ -84,7 +86,7 @@ export function LuxGauge({
           fill="currentColor"
           className="text-text"
         >
-          {value != null ? value : '—'}
+          {isOffline ? 'No signal' : (value != null ? value : '—')}
         </text>
         <text
           x={cx}
@@ -106,8 +108,9 @@ interface ArrayLuxBadgeProps {
   value: number | null | undefined;
   label: string;
   color?: string;
+  isOffline?: boolean;
 }
-export function ArrayLuxBadge({ value, label, color = '#4FD1C5' }: ArrayLuxBadgeProps) {
+export function ArrayLuxBadge({ value, label, color = '#4FD1C5', isOffline }: ArrayLuxBadgeProps) {
   const max = 4000;
   const pct = value != null ? Math.min(value / max, 1) * 100 : 0;
 
@@ -116,7 +119,7 @@ export function ArrayLuxBadge({ value, label, color = '#4FD1C5' }: ArrayLuxBadge
       <div className="flex justify-between items-center">
         <span className="text-xs text-muted font-medium">{label}</span>
         <span className="text-sm font-bold text-text tabular-nums">
-          {value != null ? `${value} lux` : '—'}
+          {isOffline ? 'No signal' : (value != null ? `${value} lux` : '—')}
         </span>
       </div>
       <div className="w-full h-2 rounded-full bg-muted/15 overflow-hidden">

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { StatCard } from '@/components/dashboard/stat-card';
 import { StatCardSkeleton, TableSkeleton } from '@/components/dashboard/skeleton';
-import { SensorTable } from '@/components/dashboard/sensor-table';
+import { SensorChart } from '@/components/dashboard/sensor-chart';
 import { CommandTable } from '@/components/dashboard/command-table';
 import { CreateCommandModal } from '@/components/dashboard/create-command-modal';
 import { LuxGauge, ArrayLuxBadge } from '@/components/dashboard/lux-gauge';
@@ -44,17 +44,22 @@ export default function DashboardPage() {
     setLastUpdated(new Date());
   }, [router]);
 
-  const fetchHistory = useCallback(async () => {
-    const res = await fetch('/api/sensors/history?limit=50', { cache: 'no-store' });
+  const [selectedDate, setSelectedDate] = useState<string>('');
+
+  const fetchHistory = useCallback(async (date: string) => {
+    if (!date) return;
+    setLoadingHistory(true);
+    const res = await fetch(`/api/sensors/history?date=${date}&limit=1000`, { cache: 'no-store' });
     if (res.status === 401) { router.push('/auth/login'); return; }
     if (!res.ok) throw new Error(`Sensor history: ${res.status}`);
     const data: SensorHistoryResponse = await res.json();
     setHistory(data.readings ?? []);
+    setLoadingHistory(false);
   }, [router]);
 
   const fetchCommands = useCallback(async () => {
     try {
-      const res = await fetch('/api/commands/history?limit=50', { cache: 'no-store' });
+      const res = await fetch('/api/commands/history?limit=5', { cache: 'no-store' });
       if (res.status === 401) { router.push('/auth/login'); return; }
       if (!res.ok) {
         setCommands([]);
@@ -72,23 +77,26 @@ export default function DashboardPage() {
     try {
       await Promise.all([
         fetchLatest().finally(() => setLoadingLatest(false)),
-        fetchHistory().finally(() => setLoadingHistory(false)),
+        fetchCommands().finally(() => setLoadingCommands(false)),
       ]);
-      await fetchCommands().finally(() => setLoadingCommands(false));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error');
     }
-  }, [fetchLatest, fetchHistory, fetchCommands]);
+  }, [fetchLatest, fetchCommands]);
 
   const refreshSilent = useCallback(async () => {
     setIsLive(true);
     try {
-      await Promise.all([fetchLatest(), fetchHistory(), fetchCommands()]);
+      await Promise.all([
+        fetchLatest(), 
+        selectedDate ? fetchHistory(selectedDate) : Promise.resolve(), 
+        fetchCommands()
+      ]);
     } catch {
     } finally {
       setTimeout(() => setIsLive(false), 600);
     }
-  }, [fetchLatest, fetchHistory, fetchCommands]);
+  }, [fetchLatest, fetchHistory, fetchCommands, selectedDate]);
 
   useEffect(() => {
     loadAll();
@@ -97,6 +105,12 @@ export default function DashboardPage() {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [loadAll, refreshSilent]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      fetchHistory(selectedDate);
+    }
+  }, [selectedDate, fetchHistory]);
 
   const luxBalance =
     latest?.lux_panel_left != null && latest?.lux_panel_right != null
@@ -164,6 +178,7 @@ export default function DashboardPage() {
               unit="lux"
               icon="☀️"
               sub="Solar sensor left"
+              isOffline={latest ? !latest.is_online : false}
             />
             <StatCard
               label="Lux Right"
@@ -171,6 +186,7 @@ export default function DashboardPage() {
               unit="lux"
               icon="☀️"
               sub="Solar sensor right"
+              isOffline={latest ? !latest.is_online : false}
             />
             <StatCard
               label="Lux Balance"
@@ -179,6 +195,7 @@ export default function DashboardPage() {
               icon="⚖️"
               accent={luxBalance != null && luxBalance > 200 ? 'text-yellow-400' : 'text-primary'}
               sub={luxBalance != null ? luxBalance < 100 ? 'Balanced ✓' : 'Tracking…' : 'No solar data'}
+              isOffline={latest ? !latest.is_online : false}
             />
             <StatCard
               label="ESP32 Status"
@@ -202,8 +219,8 @@ export default function DashboardPage() {
             </div>
             {hasSolarData ? (
               <div className="flex justify-around">
-                <LuxGauge value={latest?.lux_panel_left} label="Left" color="#F6E05E" size={130} />
-                <LuxGauge value={latest?.lux_panel_right} label="Right" color="#ED8936" size={130} />
+                <LuxGauge value={latest?.lux_panel_left} label="Left" color="#F6E05E" size={130} isOffline={latest ? !latest.is_online : false} />
+                <LuxGauge value={latest?.lux_panel_right} label="Right" color="#ED8936" size={130} isOffline={latest ? !latest.is_online : false} />
               </div>
             ) : (
               <p className="text-xs text-muted text-center py-4">No solar sensor data yet</p>
@@ -219,10 +236,10 @@ export default function DashboardPage() {
             </div>
             {hasArrayData ? (
               <div className="flex flex-col gap-3">
-                <ArrayLuxBadge value={latest?.lux_l} label="Array Left" color="#4FD1C5" />
-                <ArrayLuxBadge value={latest?.lux_ml} label="Array Mid-Left" color="#63B3ED" />
-                <ArrayLuxBadge value={latest?.lux_mr} label="Array Mid-Right" color="#9F7AEA" />
-                <ArrayLuxBadge value={latest?.lux_r} label="Array Right" color="#FC8181" />
+                <ArrayLuxBadge value={latest?.lux_l} label="Array Left" color="#4FD1C5" isOffline={latest ? !latest.is_online : false} />
+                <ArrayLuxBadge value={latest?.lux_ml} label="Array Mid-Left" color="#63B3ED" isOffline={latest ? !latest.is_online : false} />
+                <ArrayLuxBadge value={latest?.lux_mr} label="Array Mid-Right" color="#9F7AEA" isOffline={latest ? !latest.is_online : false} />
+                <ArrayLuxBadge value={latest?.lux_r} label="Array Right" color="#FC8181" isOffline={latest ? !latest.is_online : false} />
               </div>
             ) : (
               <p className="text-xs text-muted text-center py-4">No array sensor data yet</p>
@@ -233,12 +250,29 @@ export default function DashboardPage() {
             voltage={latest?.voltage}
             current={latest?.current}
             power={latest?.power}
+            isOffline={latest ? !latest.is_online : false}
           />
         </div>
       )}
 
-      {loadingHistory ? <TableSkeleton rows={6} /> : <SensorTable readings={history} />}
-      {loadingCommands ? <TableSkeleton rows={4} /> : <CommandTable commands={commands} />}
+      {loadingHistory && !selectedDate ? <TableSkeleton rows={6} /> : (
+        <SensorChart 
+          data={history} 
+          selectedDate={selectedDate} 
+          onDateChange={setSelectedDate} 
+          loading={loadingHistory}
+        />
+      )}
+
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-text uppercase tracking-wide">Recent Commands</h2>
+          <button onClick={() => router.push('/tables')} className="text-xs text-primary hover:underline font-medium">
+            View All →
+          </button>
+        </div>
+        {loadingCommands ? <TableSkeleton rows={4} /> : <CommandTable commands={commands} />}
+      </div>
 
       <CreateCommandModal
         open={modalOpen}

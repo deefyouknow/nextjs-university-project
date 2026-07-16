@@ -12,8 +12,6 @@ interface CreateCommandModalProps {
 export function CreateCommandModal({ open, onClose, onSuccess }: CreateCommandModalProps) {
   const [mode, setMode] = useState<'error' | 'light_bias'>('error');
   const [targetValue, setTargetValue] = useState<string>('50');
-  const [targetLeftRatio, setTargetLeftRatio] = useState<string>('0.50');
-  const [targetRightRatio, setTargetRightRatio] = useState<string>('0.50');
   const [tolerance, setTolerance] = useState<string>('10');
   
   const [loading, setLoading] = useState(false);
@@ -38,9 +36,8 @@ export function CreateCommandModal({ open, onClose, onSuccess }: CreateCommandMo
       from_user: 'dashboard',
       target_type: mode,
       target_value: mode === 'error' ? parseFloat(targetValue) : undefined,
-      target_left_ratio: mode === 'light_bias' ? parseFloat(targetLeftRatio) : undefined,
-      target_right_ratio: mode === 'light_bias' ? parseFloat(targetRightRatio) : undefined,
-      tolerance: parseFloat(tolerance),
+      // AI Mode does not send ratios from frontend
+      tolerance: mode === 'error' ? parseFloat(tolerance) : 0, // AI might not need tolerance from frontend
     };
 
     try {
@@ -110,63 +107,42 @@ export function CreateCommandModal({ open, onClose, onSuccess }: CreateCommandMo
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {mode === 'error' ? (
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-muted uppercase tracking-wider font-medium">Target Error</label>
-              <input
-                ref={inputRef}
-                type="number"
-                step="0.1"
-                min={0}
-                value={targetValue}
-                onChange={(e) => setTargetValue(e.target.value)}
-                className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:border-primary focus:outline-none transition-colors"
-                required
-              />
-            </div>
-          ) : (
-            <div className="flex gap-3">
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-xs text-muted uppercase tracking-wider font-medium">Left Ratio</label>
+            <>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-muted uppercase tracking-wider font-medium">Target Error</label>
                 <input
                   ref={inputRef}
                   type="number"
-                  step="0.01"
+                  step="0.1"
                   min={0}
-                  max={1}
-                  value={targetLeftRatio}
-                  onChange={(e) => setTargetLeftRatio(e.target.value)}
+                  value={targetValue}
+                  onChange={(e) => setTargetValue(e.target.value)}
                   className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:border-primary focus:outline-none transition-colors"
                   required
                 />
               </div>
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-xs text-muted uppercase tracking-wider font-medium">Right Ratio</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-muted uppercase tracking-wider font-medium">Tolerance</label>
                 <input
                   type="number"
                   step="0.01"
                   min={0}
-                  max={1}
-                  value={targetRightRatio}
-                  onChange={(e) => setTargetRightRatio(e.target.value)}
+                  value={tolerance}
+                  onChange={(e) => setTolerance(e.target.value)}
                   className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:border-primary focus:outline-none transition-colors"
                   required
                 />
               </div>
+            </>
+          ) : (
+            <div className="py-6 flex flex-col items-center text-center gap-3">
+              <span className="text-4xl">🤖</span>
+              <p className="text-sm text-text font-medium">AI Auto-Tracking Mode</p>
+              <p className="text-xs text-muted max-w-[250px]">
+                The backend ML model will automatically calculate the optimal light bias ratio and adjust the solar panels.
+              </p>
             </div>
           )}
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-muted uppercase tracking-wider font-medium">Tolerance</label>
-            <input
-              type="number"
-              step="0.01"
-              min={0}
-              value={tolerance}
-              onChange={(e) => setTolerance(e.target.value)}
-              className="bg-bg border border-muted/30 rounded-lg px-3 py-2 text-text text-sm focus:border-primary focus:outline-none transition-colors"
-              required
-            />
-          </div>
 
           {error && <p className="text-xs text-red-400 bg-red-500/10 rounded-lg px-3 py-2">{error}</p>}
 
@@ -181,9 +157,9 @@ export function CreateCommandModal({ open, onClose, onSuccess }: CreateCommandMo
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:brightness-110 transition-all disabled:opacity-50"
+              className={`flex-1 px-4 py-2 rounded-lg text-white text-sm font-medium hover:brightness-110 transition-all disabled:opacity-50 ${mode === 'error' ? 'bg-primary' : 'bg-purple-500'}`}
             >
-              {loading ? 'Sending…' : 'Send'}
+              {loading ? 'Processing…' : (mode === 'error' ? 'Send Command' : 'Activate AI')}
             </button>
           </div>
         </form>
