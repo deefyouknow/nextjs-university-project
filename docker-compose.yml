@@ -1,22 +1,23 @@
 version: '3.8'
 
 services:
-  api:
+  web:
     image: ghcr.io/deefyouknow/nextjs-university-project:latest
     container_name: reacty
     environment:
-      - AXUM_API_URL=${AXUM_API_URL}
+      - AXUM_API_URL=http://axum_api:4000
     ports:
       - "${APP_PORT}:3000"
     command: npm run start
     restart: unless-stopped
     networks:
       - tunnel-net
+      - shared_app_net
 
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared-web
-    command: tunnel --no-autoupdate run --url http://api:3000
+    command: tunnel --no-autoupdate run --url http://web:3000
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN_KEY}
     networks:
@@ -26,3 +27,5 @@ services:
 networks:
   tunnel-net:
     driver: bridge
+  shared_app_net:
+    external: true

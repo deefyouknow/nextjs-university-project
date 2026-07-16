@@ -10,6 +10,7 @@ import { CommandTable } from '@/components/dashboard/command-table';
 import { CreateCommandModal } from '@/components/dashboard/create-command-modal';
 import { LuxGauge, ArrayLuxBadge } from '@/components/dashboard/lux-gauge';
 import { PowerDisplay } from '@/components/dashboard/power-display';
+import { SensorHistoryTable } from '@/components/dashboard/sensor-history-table';
 
 import type { SensorLog, SensorHistoryResponse } from '@/types/sensor';
 import type { Command, CommandListResponse } from '@/types/command';
@@ -117,12 +118,10 @@ export default function DashboardPage() {
       ? Math.abs(latest.lux_panel_left - latest.lux_panel_right)
       : null;
 
-  const hasSolarData = latest?.lux_panel_left != null || latest?.lux_panel_right != null;
-  const hasArrayData =
-    latest?.lux_l != null ||
-    latest?.lux_ml != null ||
-    latest?.lux_mr != null ||
-    latest?.lux_r != null;
+  // We want to show the gauges and badges as long as we have ANY response from the backend 
+  // (even if it's just a null heartbeat) so the user knows the API is alive.
+  const hasSolarData = !!latest;
+  const hasArrayData = !!latest;
 
   return (
     <div className="w-full p-4 flex flex-col gap-6">
@@ -256,12 +255,15 @@ export default function DashboardPage() {
       )}
 
       {loadingHistory && !selectedDate ? <TableSkeleton rows={6} /> : (
-        <SensorChart 
-          data={history} 
-          selectedDate={selectedDate} 
-          onDateChange={setSelectedDate} 
-          loading={loadingHistory}
-        />
+        <div className="flex flex-col gap-4">
+          <SensorChart 
+            data={history} 
+            selectedDate={selectedDate} 
+            onDateChange={setSelectedDate} 
+            loading={loadingHistory}
+          />
+          <SensorHistoryTable data={history} />
+        </div>
       )}
 
       <div className="flex flex-col gap-2">
